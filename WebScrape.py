@@ -1,3 +1,7 @@
+#This program will take user's input for players, search for their stats
+# on NBAreference.com, then create excel files for those stats
+
+
 import urllib
 from bs4 import BeautifulSoup
 import os
@@ -6,32 +10,40 @@ import xlwt
 url_list = []
 players = []
 row = []
-wb = xlwt.Workbook()
-ws = wb.add_sheet('Stat Sheet')
 
-
-
+def wsSetup():
+	wb = xlwt.Workbook()
+	ws = wb.add_sheet('Stat Sheet')
+		
 def make_soup(url):
 	page = urllib.urlopen(url)
 	soupdata = BeautifulSoup(page, "html.parser")
 	return soupdata
 	
-def retrieveStats(url_list):
+def retrieveStats(url_list, players):
+	player = 0 
 	for url in url_list:
+		wb = xlwt.Workbook()
+		ws = wb.add_sheet('Stat Sheet')
 		soup = make_soup(url)
-		x, y = 0, 0 
+		x, y = 0, 1 
+	
 		for table in soup.find_all(id = 'pgl_basic'):
 			for record in table.find_all('tr'):
 				for stat in record.find_all('td'):
-					if x < 30:
+					if stat.text == 'Did Not Play' or stat.text == 'Inactive':
+						ws.write(x, y, stat.text)
+						x = 0
+						y += 1
+					elif x < 30:
 						ws.write(x, y, stat.text)
 						x += 1
 					else:
 						ws.write(x, y, stat.text)
 						x = 0
 						y += 1
-		wb.save('{}'.format('stats2.xls'))
-				
+		wb.save('{}.xls'.format(players[player]))
+		player += 1		
 
 def getUrls(players):
 	for player in players:
@@ -56,6 +68,9 @@ while True:
 		
 getUrls(players)
 print url_list
-retrieveStats(url_list)
+try:
+	retrieveStats(url_list, players)
 
-			
+except:
+	print "This network request did not work dude"
+				
