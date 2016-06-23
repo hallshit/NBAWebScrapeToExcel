@@ -12,15 +12,19 @@ players = []
 row = []
 
 def wsSetup():
+"""This function is incomplete but goal is to set up ws with correct column 
+	and row titles """
 	wb = xlwt.Workbook()
 	ws = wb.add_sheet('Stat Sheet')
 		
 def make_soup(url):
+	"""Opens page and creates BeautifulSoup object"""
 	page = urllib.urlopen(url)
 	soupdata = BeautifulSoup(page, "html.parser")
 	return soupdata
 	
 def retrieveStats(url_list, players):
+	"""In the BeautifulSoup object, draw out all stats and insert into excel file"""
 	player = 0 
 	for url in url_list:
 		wb = xlwt.Workbook()
@@ -46,6 +50,7 @@ def retrieveStats(url_list, players):
 		player += 1		
 
 def getUrls(players):
+	"""Creates custom URL for each player"""
 	for player in players:
 		nameLi = player.split(" ")
 		firstName = nameLi[0]
@@ -57,6 +62,7 @@ def getUrls(players):
 		url_list.append(url)
 
 while True:
+"""Asks user to input players"""
 	player = raw_input("Enter players.  Enter 'Done' when finished   ")
 	if player.lower() == 'done':
 		break
